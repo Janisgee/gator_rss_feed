@@ -1,17 +1,22 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
 	"github.com/Janisgee/gator_rss_feed/internal/config"
+	"github.com/Janisgee/gator_rss_feed/internal/database"
+	_ "github.com/lib/pq"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
 func main() {
+
 	cfg, err := config.Read()
 	if err != nil {
 		fmt.Printf("Error reading config::%v\n", err)
@@ -19,7 +24,19 @@ func main() {
 
 	fmt.Println("Read old Config:", cfg)
 
-	appState := state{
+	// Load database URL to config struct and sql.Open() a connection to my database
+	db, err := sql.Open("postgres", cfg.DatabaseURL)
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+	// Create a new *database.Queries, store it in state struct
+	dbQueries := database.New(db)
+
+	// Create a state instance
+	appState := &state{
+		db:  dbQueries,
 		cfg: &cfg,
 	}
 
@@ -27,7 +44,8 @@ func main() {
 		registeredCommands: make(map[string]func(*state, command) error),
 	}
 
-	appCommands.Register("login", HandlerLogin)
+	appCommands.Register("login", handlerLogin)
+	appCommands.Register("register", handlerRegister)
 
 	args := os.Args
 	if len(args) < 2 {
@@ -43,7 +61,7 @@ func main() {
 		Args: commandArgs,
 	}
 
-	err = appCommands.Run(&appState, appCommand)
+	err = appCommands.Run(appState, appCommand)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
