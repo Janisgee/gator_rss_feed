@@ -7,6 +7,7 @@ CREATE TABLE users(
   PRIMARY KEY(id)
 );
 
+
 -- +goose Down
 DROP TABLE users;
 

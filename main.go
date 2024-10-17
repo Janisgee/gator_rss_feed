@@ -49,6 +49,7 @@ func main() {
 	appCommands.Register("reset", handlerReset)
 	appCommands.Register("users", handlerUsers)
 	appCommands.Register("agg", handlerAgg)
+	appCommands.Register("addfeed", handlerAddFeed)
 
 	args := os.Args
 	if len(args) < 2 {
@@ -71,3 +72,10 @@ func main() {
 	}
 
 }
+
+//psql "postgres://postgres:postgres@localhost:5432/gator"
+//goose postgres "postgres://postgres:postgres@localhost:5432/gator?sslmode=disable" up
+
+// using psql to find your newly created users table
+//psql gator
+//\dt
