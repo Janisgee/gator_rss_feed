@@ -85,11 +85,42 @@ func handlerReset(s *state, cmd command) error {
 	// Delete all users in database
 	err := s.db.DeleteAllUsers(ctx)
 	if err != nil {
-		return fmt.Errorf("error deleting all users:", err)
+		return fmt.Errorf("error deleting all users:%w", err)
 	}
 
 	fmt.Print("All users have been deleted successfully!")
 
 	return nil
 
+}
+
+func handlerUsers(s *state, cmd command) error {
+	ctx := context.Background()
+	// Delete all users in database
+	allUsers, err := s.db.GetUsers(ctx)
+	if err != nil {
+		return fmt.Errorf("error in getting all users:%w", err)
+	}
+
+	for i := 0; i < len(allUsers); i++ {
+		if allUsers[i] == s.cfg.CurrentUserName {
+			fmt.Printf("* %s (current)\n", allUsers[i])
+		} else {
+			fmt.Printf("* %s \n", allUsers[i])
+		}
+	}
+	return nil
+}
+
+func handlerAgg(s *state, cmd command) error {
+	ctx := context.Background()
+	feedURL := "https://www.wagslane.dev/index.xml"
+
+	rssf, err := fetchFeed(ctx, feedURL)
+	if err != nil {
+		return fmt.Errorf("error in fetching the feed at %s: %w", feedURL, err)
+	}
+	fmt.Printf("Result struct: %v\n", rssf)
+
+	return nil
 }

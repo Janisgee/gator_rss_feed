@@ -47,6 +47,8 @@ func main() {
 	appCommands.Register("login", handlerLogin)
 	appCommands.Register("register", handlerRegister)
 	appCommands.Register("reset", handlerReset)
+	appCommands.Register("users", handlerUsers)
+	appCommands.Register("agg", handlerAgg)
 
 	args := os.Args
 	if len(args) < 2 {
