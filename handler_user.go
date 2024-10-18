@@ -88,7 +88,7 @@ func handlerReset(s *state, cmd command) error {
 		return fmt.Errorf("error deleting all users:%w", err)
 	}
 
-	fmt.Print("All users have been deleted successfully!")
+	fmt.Println("All users have been deleted successfully!")
 
 	return nil
 
@@ -96,7 +96,7 @@ func handlerReset(s *state, cmd command) error {
 
 func handlerUsers(s *state, cmd command) error {
 	ctx := context.Background()
-	// Delete all users in database
+
 	allUsers, err := s.db.GetUsers(ctx)
 	if err != nil {
 		return fmt.Errorf("error in getting all users:%w", err)

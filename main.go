@@ -41,17 +41,26 @@ func main() {
 	appCommands := commands{
 		registeredCommands: make(map[string]func(*state, command) error),
 	}
-
+	//Login user by (input)username
 	appCommands.Register("login", handlerLogin)
+	// Register new user by (input)username
 	appCommands.Register("register", handlerRegister)
+	// Delete all user database
 	appCommands.Register("reset", handlerReset)
+	// Get all users from database
 	appCommands.Register("users", handlerUsers)
+	// Fetch feed By (input) time between requests
 	appCommands.Register("agg", handlerAgg)
+	// All feed from logined user by (input) feedName and feedUrl
 	appCommands.Register("addfeed", middlewareLoggedIn(handlerAddFeed))
-	appCommands.Register("feeds", handlerListFeeds)                               //List all the feeds from database
-	appCommands.Register("follow", middlewareLoggedIn(handlerFollow))             //Get feed_name, username BY FeedURL
-	appCommands.Register("following", middlewareLoggedIn(handlerListFeedFollows)) //Get feed_name BY LOGIN current user
-	appCommands.Register("unfollow", middlewareLoggedIn(handleUnfollow))          //Delete feedfollow BY userID and feedUrl
+	//List all the feeds from database
+	appCommands.Register("feeds", handlerListFeeds)
+	//Get feed_name, username by (input) FeedURL
+	appCommands.Register("follow", middlewareLoggedIn(handlerFollow))
+	//Get feed_name by (input) LOGIN current user
+	appCommands.Register("following", middlewareLoggedIn(handlerListFeedFollows))
+	//Delete feedfollow by (input) userID and feedUrl
+	appCommands.Register("unfollow", middlewareLoggedIn(handleUnfollow))
 
 	args := os.Args
 	if len(args) < 2 {

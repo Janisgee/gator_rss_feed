@@ -21,7 +21,7 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 	ctx := context.Background()
 
 	// Get feed
-	feed, err := s.db.GetFeed(ctx, feedUrl)
+	feed, err := s.db.GetFeedByUrl(ctx, feedUrl)
 	if err != nil {
 		return fmt.Errorf("error in getting feed from database with provided URL(%s):%w", feedUrl, err)
 	}
@@ -84,7 +84,7 @@ func handleUnfollow(s *state, cmd command, user database.User) error {
 	feedUrl := cmd.Args[0]
 
 	// Get feed
-	feed, err := s.db.GetFeed(ctx, feedUrl)
+	feed, err := s.db.GetFeedByUrl(ctx, feedUrl)
 	if err != nil {
 		return fmt.Errorf("error in getting feed from database with provided URL(%s):%w", feedUrl, err)
 	}

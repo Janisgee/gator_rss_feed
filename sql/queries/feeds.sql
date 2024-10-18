@@ -14,5 +14,16 @@ RETURNING *;
 SELECT f.name AS feed_name, f.url, u.name AS user_name FROM feeds f 
 JOIN users u ON f.user_id = u.id;
 
--- name: GetFeed :one
+-- name: GetFeedByUrl :one
 SELECT * FROM feeds WHERE url = $1 LIMIT 1;
+
+-- name: MarkFeedFetched :exec
+UPDATE feeds
+SET last_fetched_at = Now(),
+updated_at = Now()
+WHERE id = $1;
+
+-- name: GetNextFeedToFetch :one
+SELECT * FROM feeds 
+ORDER BY last_fetched_at ASC NULLS FIRST
+LIMIT 1;
