@@ -48,7 +48,9 @@ func main() {
 	appCommands.Register("users", handlerUsers)
 	appCommands.Register("agg", handlerAgg)
 	appCommands.Register("addfeed", handlerAddFeed)
-	appCommands.Register("feeds", handlerFeeds)
+	appCommands.Register("feeds", handlerListFeeds)           //List all the feeds from database
+	appCommands.Register("follow", handlerFollow)             //Get feed_name, username BY FeedURL
+	appCommands.Register("following", handlerListFeedFollows) //Get feed_name BY LOGIN current user
 
 	args := os.Args
 	if len(args) < 2 {
@@ -72,9 +74,14 @@ func main() {
 
 }
 
+// Terminal command for development:
+
 //psql "postgres://postgres:postgres@localhost:5432/gator"
 //goose postgres "postgres://postgres:postgres@localhost:5432/gator?sslmode=disable" up
 
 // using psql to find your newly created users table
 //psql gator
 //\dt
+
+//sqlc generate
+//go build -o gator_rss_feed

@@ -45,6 +45,15 @@ func handlerAddFeed(s *state, cmd command) error {
 	fmt.Println()
 	fmt.Println("=================================================")
 
+	if len(cmd.Args) >= 2 {
+		cmd.Args = cmd.Args[1:]
+	}
+
+	err = handlerFollow(s, cmd)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -57,7 +66,7 @@ func printFeed(feed database.Feed) {
 	fmt.Printf("* UserID:      %s\n", feed.UserID)
 }
 
-func handlerFeeds(s *state, cmd command) error {
+func handlerListFeeds(s *state, cmd command) error {
 	// Create an empty context
 	ctx := context.Background()
 
