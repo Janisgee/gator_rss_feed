@@ -56,3 +56,32 @@ func printFeed(feed database.Feed) {
 	fmt.Printf("* Url:         %s\n", feed.Url)
 	fmt.Printf("* UserID:      %s\n", feed.UserID)
 }
+
+func handlerFeeds(s *state, cmd command) error {
+	// Create an empty context
+	ctx := context.Background()
+
+	allFeeds, err := s.db.GetFeeds(ctx)
+	if err != nil {
+		return fmt.Errorf("error in getting all feeds:%w", err)
+	}
+
+	if len(allFeeds) == 0 {
+		fmt.Printf("No feeds found.%d feed in database.\n", len(allFeeds))
+		return nil
+	}
+
+	fmt.Printf("Found %d feeds:\n", len(allFeeds))
+	fmt.Println("=============================")
+	fmt.Println()
+	for i := 0; i < len(allFeeds); i++ {
+		fmt.Printf("* Feed Name:  %s\n", allFeeds[i].FeedName)
+		fmt.Printf("* Url:        %s\n", allFeeds[i].Url)
+		fmt.Printf("* Username:   %s\n", allFeeds[i].UserName)
+		fmt.Println()
+		fmt.Println("=============================")
+		fmt.Println()
+	}
+
+	return nil
+}

@@ -22,8 +22,6 @@ func main() {
 		fmt.Printf("Error reading config::%v\n", err)
 	}
 
-	fmt.Println("Read old Config:", cfg)
-
 	// Load database URL to config struct and sql.Open() a connection to my database
 	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
@@ -50,6 +48,7 @@ func main() {
 	appCommands.Register("users", handlerUsers)
 	appCommands.Register("agg", handlerAgg)
 	appCommands.Register("addfeed", handlerAddFeed)
+	appCommands.Register("feeds", handlerFeeds)
 
 	args := os.Args
 	if len(args) < 2 {
