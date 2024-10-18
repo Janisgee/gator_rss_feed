@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) < 2 {
 		return errors.New("not enough arguments. arguments should contain name and url")
 	}
@@ -19,12 +19,6 @@ func handlerAddFeed(s *state, cmd command) error {
 	feedURL := cmd.Args[1]
 	// Create an empty context
 	ctx := context.Background()
-	// Get user ID
-	username := s.cfg.CurrentUserName
-	user, err := s.db.GetUser(ctx, username)
-	if err != nil {
-		return fmt.Errorf("cannot find username from user database:%w", err)
-	}
 
 	//Create feeds table
 	params := database.CreateFeedsParams{
@@ -49,7 +43,7 @@ func handlerAddFeed(s *state, cmd command) error {
 		cmd.Args = cmd.Args[1:]
 	}
 
-	err = handlerFollow(s, cmd)
+	err = handlerFollow(s, cmd, user)
 	if err != nil {
 		return err
 	}

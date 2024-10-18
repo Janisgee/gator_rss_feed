@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("url is not provided from argument")
 	}
@@ -17,14 +17,8 @@ func handlerFollow(s *state, cmd command) error {
 	feedUrl := cmd.Args[0]
 	username := s.cfg.CurrentUserName
 
-	// Create an empty context
+	// // Create an empty context
 	ctx := context.Background()
-
-	// Get userID
-	userInfo, err := s.db.GetUser(ctx, username)
-	if err != nil {
-		return fmt.Errorf("current user is not regist yet:%w", err)
-	}
 
 	// Get feed
 	feed, err := s.db.GetFeed(ctx, feedUrl)
@@ -37,7 +31,7 @@ func handlerFollow(s *state, cmd command) error {
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		UserID:    userInfo.ID,
+		UserID:    user.ID,
 		FeedID:    feed.ID,
 	}
 
@@ -54,7 +48,7 @@ func handlerFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerListFeedFollows(s *state, cmd command) error {
+func handlerListFeedFollows(s *state, cmd command, user database.User) error {
 	currentUser := s.cfg.CurrentUserName
 
 	// Create an empty context
@@ -76,5 +70,39 @@ func handlerListFeedFollows(s *state, cmd command) error {
 		fmt.Printf("* %s\n", feedFollow[i].FeedName)
 	}
 	fmt.Println()
+	return nil
+}
+
+func handleUnfollow(s *state, cmd command, user database.User) error {
+	// Create an empty context
+	ctx := context.Background()
+
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("error in missing argument. feed url is needed for unfollowing feed action")
+	}
+
+	feedUrl := cmd.Args[0]
+
+	// Get feed
+	feed, err := s.db.GetFeed(ctx, feedUrl)
+	if err != nil {
+		return fmt.Errorf("error in getting feed from database with provided URL(%s):%w", feedUrl, err)
+	}
+
+	//params for unfollow feed
+	params := database.DeleteFeedFollowsForUserParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	}
+	// Unfollow feed by user (userID & feedUrl)
+	deletedRows, err := s.db.DeleteFeedFollowsForUser(ctx, params)
+	if err != nil {
+		return fmt.Errorf("error in deleting feed(url:%s) follows for user(%s) and :%w", feedUrl, user.Name, err)
+	}
+
+	fmt.Printf("Unfollowed successfully:\n")
+	fmt.Printf("* Feed Name: %s Feed URL: %s\n", feed.Name, feedUrl)
+	fmt.Printf("* Feed Info: %s\n", deletedRows)
+
 	return nil
 }

@@ -47,10 +47,11 @@ func main() {
 	appCommands.Register("reset", handlerReset)
 	appCommands.Register("users", handlerUsers)
 	appCommands.Register("agg", handlerAgg)
-	appCommands.Register("addfeed", handlerAddFeed)
-	appCommands.Register("feeds", handlerListFeeds)           //List all the feeds from database
-	appCommands.Register("follow", handlerFollow)             //Get feed_name, username BY FeedURL
-	appCommands.Register("following", handlerListFeedFollows) //Get feed_name BY LOGIN current user
+	appCommands.Register("addfeed", middlewareLoggedIn(handlerAddFeed))
+	appCommands.Register("feeds", handlerListFeeds)                               //List all the feeds from database
+	appCommands.Register("follow", middlewareLoggedIn(handlerFollow))             //Get feed_name, username BY FeedURL
+	appCommands.Register("following", middlewareLoggedIn(handlerListFeedFollows)) //Get feed_name BY LOGIN current user
+	appCommands.Register("unfollow", middlewareLoggedIn(handleUnfollow))          //Delete feedfollow BY userID and feedUrl
 
 	args := os.Args
 	if len(args) < 2 {
