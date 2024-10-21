@@ -52,12 +52,13 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 }
 
 func printFeed(feed database.Feed) {
-	fmt.Printf("* ID:          %s\n", feed.ID)
-	fmt.Printf("* CreatedAt:   %v\n", feed.CreatedAt)
-	fmt.Printf("* UpdatedAt:   %v\n", feed.UpdatedAt)
-	fmt.Printf("* Name:        %s\n", feed.Name)
-	fmt.Printf("* Url:         %s\n", feed.Url)
-	fmt.Printf("* UserID:      %s\n", feed.UserID)
+	fmt.Printf("* ID:            %s\n", feed.ID)
+	fmt.Printf("* CreatedAt:     %v\n", feed.CreatedAt)
+	fmt.Printf("* UpdatedAt:     %v\n", feed.UpdatedAt)
+	fmt.Printf("* Name:          %s\n", feed.Name)
+	fmt.Printf("* Url:           %s\n", feed.Url)
+	fmt.Printf("* UserID:        %s\n", feed.UserID)
+	fmt.Printf("* LastFetchedAt: %v\n", feed.LastFetchedAt.Time)
 }
 
 func handlerListFeeds(s *state, cmd command) error {
@@ -78,9 +79,14 @@ func handlerListFeeds(s *state, cmd command) error {
 	fmt.Println("=============================")
 	fmt.Println()
 	for i := 0; i < len(allFeeds); i++ {
-		fmt.Printf("* Feed Name:  %s\n", allFeeds[i].FeedName)
+		user, err := s.db.GetUserByUserID(ctx, allFeeds[i].UserID)
+		if err != nil {
+			return fmt.Errorf("error in getting user information by user ID:%w", err)
+		}
+
+		fmt.Printf("* Feed Name:  %s\n", allFeeds[i].Name)
 		fmt.Printf("* Url:        %s\n", allFeeds[i].Url)
-		fmt.Printf("* Username:   %s\n", allFeeds[i].UserName)
+		fmt.Printf("* Username:   %s\n", user.Name)
 		fmt.Println()
 		fmt.Println("=============================")
 		fmt.Println()

@@ -61,6 +61,8 @@ func main() {
 	appCommands.Register("following", middlewareLoggedIn(handlerListFeedFollows))
 	//Delete feedfollow by (input) userID and feedUrl
 	appCommands.Register("unfollow", middlewareLoggedIn(handleUnfollow))
+	// Browse posts by (input) limited number of post/ default 2 posts
+	appCommands.Register("browse", middlewareLoggedIn(handlerBrowse))
 
 	args := os.Args
 	if len(args) < 2 {

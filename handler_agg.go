@@ -2,8 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"strings"
 	"time"
+
+	"github.com/Janisgee/gator_rss_feed/internal/database"
+	"github.com/google/uuid"
 )
 
 func handlerAgg(s *state, cmd command) error {
@@ -25,7 +30,10 @@ func handlerAgg(s *state, cmd command) error {
 	ticker := time.NewTicker(timeBetweenRequests)
 
 	for ; ; <-ticker.C {
-		scrapeFeeds(s)
+		err = scrapeFeeds(s)
+		if err != nil {
+			return err
+		}
 		fmt.Println()
 		fmt.Println("==================================")
 		fmt.Println()
@@ -33,7 +41,7 @@ func handlerAgg(s *state, cmd command) error {
 
 }
 
-func scrapeFeeds(s *state) {
+func scrapeFeeds(s *state) error {
 	ctx := context.Background()
 	// Get next feed to fetch from DB
 	nextFeed, err := s.db.GetNextFeedToFetch(ctx)
@@ -42,7 +50,7 @@ func scrapeFeeds(s *state) {
 	}
 
 	// Mark it as fetched
-	err = s.db.MarkFeedFetched(ctx, nextFeed.ID)
+	_, err = s.db.MarkFeedFetched(ctx, nextFeed.ID)
 	if err != nil {
 		fmt.Printf("error in marking next feed(feed name: %s) as fetch.\n", nextFeed.Name)
 	}
@@ -54,8 +62,40 @@ func scrapeFeeds(s *state) {
 	}
 
 	for _, items := range rssFeed.Channel.Item {
-		fmt.Printf("RssFeed Item Title:  %s\n", items.Title)
-	}
-	fmt.Printf("Feed %s collected, %v posts found\n", nextFeed.Name, len(rssFeed.Channel.Item))
+		// Parse time into time
+		publishedAt := sql.NullTime{}
+		t, err := time.Parse(time.RFC1123Z, items.PubDate)
+		if err != nil {
+			publishedAt = sql.NullTime{
+				Time:  t,
+				Valid: true,
+			}
+		}
+		//Create posts table
+		params := database.CreatePostsParams{
+			ID:        uuid.New(),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			Title:     items.Title,
+			Url:       items.Link,
+			Description: sql.NullString{
+				String: items.Description,
+				Valid:  true,
+			},
+			PublishedAt: publishedAt,
+			FeedID:      nextFeed.ID,
+		}
+		_, err = s.db.CreatePosts(ctx, params)
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				continue
+			}
+			fmt.Printf("Couldn't create post: %v\n", err)
+			continue
+		}
 
+	}
+	fmt.Printf("Feed %s collected, %v posts found", nextFeed.Name, len(rssFeed.Channel.Item))
+
+	return nil
 }
