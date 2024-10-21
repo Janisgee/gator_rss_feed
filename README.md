@@ -17,7 +17,7 @@ The Gator requires a Golang installation, and only works on Linux and Mac. If yo
 Option 1: The webi installer is the simplest way for most people. Just run this in your terminal:
 
 ```
- curl -sS https://webi.sh/golang | sh
+curl -sS https://webi.sh/golang | sh
 ```
 
 Option 2: Use the official installation instructions. For further information, you can read https://go.dev/doc/install.
@@ -26,22 +26,22 @@ Option 2: Use the official installation instructions. For further information, y
 
 ###### Mac OS with brew
 
-     ```
-     brew install postgresql@16
-     ```
+```
+brew install postgresql@16
+```
 
 ###### Linux / WSL (Debian). Here are the docs from Microsoft, but simply:
 
-     ```
-     sudo apt update
-     sudo apt install postgresql postgresql-contrib
-     ```
+```
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+```
 
 #### 3. Install Gator
 
-      ```bash
-      go install ...
-      ```
+```bash
+go install ...
+```
 
 ## Configuration
 
