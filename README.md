@@ -14,8 +14,11 @@ This Gator application requires Golang and Postgres installation to run the prog
 
 The Gator requires a Golang installation, and only works on Linux and Mac. If you're on Windows, you'll need to use WSL. Make sure you install go in your Linux/WSL terminal, not your Windows terminal/UI. There are two options:
 
-Option 1: The webi installer is the simplest way for most people. Just run this in your terminal:  
+Option 1: The webi installer is the simplest way for most people. Just run this in your terminal:
+
+```
  curl -sS https://webi.sh/golang | sh
+```
 
 Option 2: Use the official installation instructions. For further information, you can read https://go.dev/doc/install.
 
@@ -36,8 +39,7 @@ Option 2: Use the official installation instructions. For further information, y
 
 #### 3. Install Gator
 
-      ```
-      bash
+      ```bash
       go install ...
       ```
 
